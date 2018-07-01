@@ -1,0 +1,32 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+	http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+
+	<!-- 配置连接工厂 -->
+	<!-- 定义连接工厂 -->
+	<rabbit:connection-factory id="connectionFactory"
+		host="${rabbitmq.host}" port="${rabbitmq.port}" username="${rabbitmq.username}"
+		password="${rabbitmq.passwd}" virtual-host="${rabbitmq.vhost}" />
+
+
+	<rabbit:admin connection-factory="connectionFactory" />
+
+
+	<!-- 定义队列 自动声明 ， 队列的名字  这里叫：order_item_del-->
+	<rabbit:queue auto-declare="true" name="TAOTAO_ORDER_ITEM_DEL" durable="true"/>
+	<!-- 声明队列-->
+	<rabbit:queue name="TAOTAO_CART_ITEM_QUEUE" auto-declare="true" durable="true"/>
+	
+	<!-- 监听队列 -->
+	<rabbit:listener-container connection-factory="connectionFactory">
+	
+		<rabbit:listener ref="orderItemDelHandler" method="deleteRrderItem" queue-names="TAOTAO_ORDER_ITEM_DEL"/>
+		<!-- ItemHandler监听队列 -->
+		<rabbit:listener ref="mergeItemHandler" method="execute" queue-names="TAOTAO_CART_ITEM_QUEUE"/>
+	</rabbit:listener-container>
+	
+
+</beans>
