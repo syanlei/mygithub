@@ -8,4 +8,4 @@ spring:
           uri: https://github.com/syanlei
 
 server:
-  port: 8086  #服务端口
+  port: 8089  #服务端口
